@@ -37,16 +37,53 @@
             font-size: 2.5em;
         }
 
+        .subtitle-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
         .subtitle {
             text-align: center;
             color: #666;
-            margin-bottom: 30px;
             font-size: 0.9em;
+            margin: 0;
+            white-space: nowrap;
+        }
+
+        .rotate-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 1.5em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: auto;
+            min-width: auto;
+            flex: 0 0 auto;
+        }
+
+        .rotate-btn:hover {
+            background: #5568d3;
+            transform: scale(1.05);
+        }
+
+        .grid-container.rotating {
+            transform: rotate(90deg);
         }
 
         .game-info {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             margin-bottom: 20px;
             padding: 15px;
             background: #f5f5f5;
@@ -57,12 +94,30 @@
             font-size: 1.2em;
             font-weight: bold;
             color: #667eea;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
-        .timer {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #764ba2;
+        .score:hover {
+            color: #5568d3;
+            transform: scale(1.05);
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: #667eea;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 0%;
         }
 
         .grid-container {
@@ -73,6 +128,7 @@
             padding: 20px;
             background: #f9f9f9;
             border-radius: 15px;
+            transition: transform 0.5s ease;
         }
 
         .cell {
@@ -133,16 +189,28 @@
             75% { transform: translateX(5px); }
         }
 
+        .word-display-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
         .word-display {
             text-align: center;
             font-size: 1.5em;
             font-weight: bold;
             color: #333;
-            min-height: 40px;
-            margin-bottom: 20px;
+            height: 70px;
             padding: 10px;
             background: #f5f5f5;
             border-radius: 10px;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.3;
         }
 
         .controls {
@@ -163,54 +231,176 @@
         }
 
 
-        .found-words {
+        .show-words-btn {
             margin-top: 20px;
-        }
-
-        .found-words h3 {
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .words-list {
-            max-height: 200px;
-            overflow-y: auto;
-            padding: 10px;
-            background: #f5f5f5;
+            width: 100%;
+            padding: 15px;
+            background: #667eea;
+            color: white;
+            border: none;
             border-radius: 10px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .show-words-btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .words-modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .words-modal-content h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            text-align: center;
+        }
+
+        .words-section {
+            margin-bottom: 25px;
+        }
+
+        .words-section h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .words-grid {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
         }
 
-        .word-badge {
-            background: #667eea;
-            color: white;
-            padding: 5px 12px;
+        .word-item {
+            padding: 8px 16px;
             border-radius: 20px;
             font-size: 0.9em;
             font-weight: bold;
         }
 
-        .message {
-            text-align: center;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 10px;
+        .word-item.found {
+            background: #4caf50;
+            color: white;
+        }
+
+        .word-item.not-found {
+            background: #f5f5f5;
+            color: #999;
+            font-family: monospace;
+        }
+
+        .floating-pill {
+            position: fixed;
+            top: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 24px;
+            border-radius: 30px;
             font-weight: bold;
+            font-size: 0.95em;
+            z-index: 999;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            animation: fadeInOut 1s ease-in-out forwards;
+            pointer-events: none;
+        }
+
+        .floating-pill.success {
+            background: #4caf50;
+            color: white;
+        }
+
+        .floating-pill.error {
+            background: #f44336;
+            color: white;
+        }
+
+        @keyframes fadeInOut {
+            0% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-10px);
+            }
+            20% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+            80% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-10px);
+            }
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .modal-content p {
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.6;
+            font-size: 1.1em;
+        }
+
+        .modal-close-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close-btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .modal-overlay.hidden {
             display: none;
-        }
-
-        .message.success {
-            background: #d4edda;
-            color: #155724;
-            display: block;
-        }
-
-        .message.error {
-            background: #f8d7da;
-            color: #721c24;
-            display: block;
         }
 
         @media (max-width: 600px) {
@@ -225,35 +415,54 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🎮 Squardle</h1>
-        <p class="subtitle">Click and drag through adjacent letters to form words</p>
-        
-        <div class="game-info">
-            <div class="score">Score: <span id="score">0</span></div>
-            <div class="timer">Time: <span id="timer">0:00</span></div>
-        </div>
-
-        <div id="message" class="message"></div>
-
-        <div class="word-display" id="wordDisplay">Click and drag through letters to form words</div>
-
-        <div class="grid-container" id="grid"></div>
-
-        <div class="found-words">
-            <h3>Found Words (<span id="wordCount">0</span>)</h3>
-            <div class="words-list" id="wordsList"></div>
+    <!-- Welcome Modal -->
+    <div id="welcomeModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>🎄 Welcome!</h2>
+            <p>Welcome to the Christmas squardle. To win the game you have to find your christmas present</p>
+            <button class="modal-close-btn" onclick="closeWelcomeModal()">Got it!</button>
         </div>
     </div>
 
+    <!-- Congratulations Modal -->
+    <div id="congratsModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h2>🏍️ Congratulations!!</h2>
+            <p>You get to go quad-biking.</p>
+            <button class="modal-close-btn" onclick="closeCongratsModal()">Awesome!</button>
+        </div>
+    </div>
+
+    <!-- Words Modal -->
+    <div id="wordsModal" class="modal-overlay hidden">
+        <div class="words-modal-content">
+            <h2>Words Progress</h2>
+            <div id="wordsModalContent"></div>
+            <button class="modal-close-btn" onclick="closeWordsModal()" style="width: 100%; margin-top: 20px;">Close</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>🎮 Christmas Squardle</h1>
+        
+        <div class="game-info">
+            <div class="score" onclick="showWordsModal()"><span id="wordProgress">0 / 32</span> words</div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="progressBar"></div>
+            </div>
+        </div>
+
+        <div class="word-display-container">
+            <div class="word-display" id="wordDisplay">Click and drag through letters to form words</div>
+            <button class="rotate-btn" onclick="rotateGrid()">🔄</button>
+        </div>
+
+        <div class="grid-container" id="grid"></div>
+
+        <button class="show-words-btn" onclick="showWordsModal()">Show Words</button>
+    </div>
+
     <script>
-        // Game grid
-        const grid = [
-            ['E', 'U', 'S', 'P'],
-            ['A', 'Q', 'A', 'I'],
-            ['B', 'D', 'K', 'N'],
-            ['N', 'I', 'G', 'T']
-        ];
 
         // Valid words list
         const validWords = new Set([
@@ -263,12 +472,18 @@
             'spain', 'spank', 'squad', 'using', 'biking', 'quaint', 'pausing', 'quadbiking'
         ]);
 
+        // Game grid
+        let grid = [
+            ['E', 'U', 'S', 'P'],
+            ['A', 'Q', 'A', 'I'],
+            ['B', 'D', 'K', 'N'],
+            ['N', 'I', 'G', 'T']
+        ];
+
         // Game state
         let selectedCells = [];
         let foundWords = new Set();
         let score = 0;
-        let startTime = Date.now();
-        let timerInterval;
         let isDragging = false;
         let lastHoveredCell = null;
 
@@ -276,7 +491,7 @@
         function init() {
             createGrid();
             setupEventListeners();
-            startTimer();
+            updateScore();
         }
 
         // Create the grid
@@ -492,12 +707,12 @@
             });
 
             // Update word display
-            const word = selectedCells.map(c => c.letter).join('');
-            if (word) {
-                document.getElementById('wordDisplay').textContent = word;
-            } else {
-                document.getElementById('wordDisplay').textContent = 'Click and drag through letters to form words';
-            }
+            // const word = selectedCells.map(c => c.letter).join('');
+            // if (word) {
+            //     document.getElementById('wordDisplay').textContent = word;
+            // } else {
+            //     document.getElementById('wordDisplay').textContent = 'Click and drag through letters to form words';
+            // }
         }
 
         // Submit word
@@ -529,6 +744,13 @@
             addWordToFound(word);
             showMessage(`Found "${word.toUpperCase()}"! +${calculateScore(word)} points`, 'success');
             clearSelection();
+
+            // Special check for quadbiking
+            if (word === 'quadbiking') {
+                setTimeout(() => {
+                    showCongratsModal();
+                }, 500);
+            }
         }
 
         // Calculate score based on word length
@@ -542,19 +764,115 @@
             return 32; // 8+ letters
         }
 
-        // Update score display
+        // Update word progress display
         function updateScore() {
-            document.getElementById('score').textContent = score;
+            const totalWords = validWords.size;
+            const foundCount = foundWords.size;
+            document.getElementById('wordProgress').textContent = `${foundCount} / ${totalWords}`;
+            
+            // Update progress bar
+            const progressPercent = (foundCount / totalWords) * 100;
+            document.getElementById('progressBar').style.width = `${progressPercent}%`;
         }
 
-        // Add word to found words list
+        // Add word to found words list (no longer needed for display, but kept for tracking)
         function addWordToFound(word) {
-            const wordsList = document.getElementById('wordsList');
-            const badge = document.createElement('span');
-            badge.className = 'word-badge';
-            badge.textContent = word.toUpperCase();
-            wordsList.appendChild(badge);
-            document.getElementById('wordCount').textContent = foundWords.size;
+            // Word is already added to foundWords set
+            // This function is kept for compatibility but doesn't need to do anything
+        }
+
+        // Show words modal
+        function showWordsModal() {
+            const modal = document.getElementById('wordsModal');
+            const content = document.getElementById('wordsModalContent');
+            content.innerHTML = '';
+            
+            // Group words by length
+            const wordsByLength = {};
+            for (const word of validWords) {
+                const len = word.length;
+                if (!wordsByLength[len]) {
+                    wordsByLength[len] = [];
+                }
+                wordsByLength[len].push(word);
+            }
+            
+            // Sort lengths
+            const lengths = Object.keys(wordsByLength).map(Number).sort((a, b) => a - b);
+            
+            // Create sections for each length
+            lengths.forEach(length => {
+                const section = document.createElement('div');
+                section.className = 'words-section';
+                
+                const heading = document.createElement('h3');
+                heading.textContent = `${length} letters`;
+                section.appendChild(heading);
+                
+                const grid = document.createElement('div');
+                grid.className = 'words-grid';
+                
+                wordsByLength[length].forEach(word => {
+                    const item = document.createElement('span');
+                    item.className = 'word-item';
+                    if (foundWords.has(word)) {
+                        item.classList.add('found');
+                        item.textContent = word.toUpperCase();
+                    } else {
+                        item.classList.add('not-found');
+                        // If score is 10 or more, show first letter
+                        if (score >= 10) {
+                            item.textContent = word[0].toUpperCase() + '*'.repeat(length - 1);
+                        } else {
+                            item.textContent = '*'.repeat(length);
+                        }
+                    }
+                    grid.appendChild(item);
+                });
+                
+                section.appendChild(grid);
+                content.appendChild(section);
+            });
+            
+            modal.classList.remove('hidden');
+        }
+
+        // Close words modal
+        function closeWordsModal() {
+            document.getElementById('wordsModal').classList.add('hidden');
+        }
+
+        // Rotate grid 90 degrees clockwise
+        function rotateGrid() {
+            // Clear current selection
+            clearSelection();
+            
+            const gridContainer = document.getElementById('grid');
+            
+            // Rotate the grid data 90 degrees clockwise
+            // For a 4x4 grid: newGrid[i][j] = oldGrid[3-j][i]
+            const newGrid = [];
+            for (let i = 0; i < 4; i++) {
+                newGrid[i] = [];
+                for (let j = 0; j < 4; j++) {
+                    newGrid[i][j] = grid[3 - j][i];
+                }
+            }
+            grid = newGrid;
+            
+            // Add rotation animation class
+            gridContainer.classList.add('rotating');
+            
+            // Update grid content halfway through animation for smoother transition
+            setTimeout(() => {
+                createGrid();
+                setupEventListeners();
+            }, 250);
+            
+            // After animation completes, remove rotation class
+            setTimeout(() => {
+                gridContainer.classList.remove('rotating');
+            }, 500);
         }
 
         // Clear selection
@@ -563,25 +881,37 @@
             updateDisplay();
         }
 
-        // Show message
+        // Show floating pill message
         function showMessage(text, type) {
-            const messageEl = document.getElementById('message');
-            messageEl.textContent = text;
-            messageEl.className = `message ${type}`;
+            // Remove any existing floating pills
+            const existingPills = document.querySelectorAll('.floating-pill');
+            existingPills.forEach(pill => pill.remove());
+
+            // Create new floating pill
+            const pill = document.createElement('div');
+            pill.className = `floating-pill ${type}`;
+            pill.textContent = text;
+            document.body.appendChild(pill);
+
+            // Remove after animation completes (1 second)
             setTimeout(() => {
-                messageEl.className = 'message';
-            }, 3000);
+                pill.remove();
+            }, 1000);
         }
 
-        // Start timer
-        function startTimer() {
-            timerInterval = setInterval(() => {
-                const elapsed = Math.floor((Date.now() - startTime) / 1000);
-                const minutes = Math.floor(elapsed / 60);
-                const seconds = elapsed % 60;
-                document.getElementById('timer').textContent = 
-                    `${minutes}:${seconds.toString().padStart(2, '0')}`;
-            }, 1000);
+        // Close welcome modal
+        function closeWelcomeModal() {
+            document.getElementById('welcomeModal').classList.add('hidden');
+        }
+
+        // Show congratulations modal
+        function showCongratsModal() {
+            document.getElementById('congratsModal').classList.remove('hidden');
+        }
+
+        // Close congratulations modal
+        function closeCongratsModal() {
+            document.getElementById('congratsModal').classList.add('hidden');
         }
 
         // Initialize on load
